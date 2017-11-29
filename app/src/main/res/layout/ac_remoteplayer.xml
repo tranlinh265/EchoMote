@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@android:color/white">
+    <ImageButton
+
+        android:src="@drawable/ic_power"
+        android:id="@+id/powerBtn"
+        android:background="@drawable/circle_ic"
+        style="@style/ButtonStyle"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <SeekBar
+            android:id="@+id/volumeBar"
+            android:max="255"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10px"/>
+    </LinearLayout>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/pauseBtn"
+                android:src="@drawable/ic_pause"
+                android:background="@drawable/circle_ic"
+                style="@style/ButtonStyle"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/stopBtn"
+                android:src="@drawable/ic_stop"
+                android:background="@drawable/circle_ic"
+                style="@style/ButtonStyle"/>
+        </RelativeLayout>
+    </TableRow>
+    <ImageButton
+        android:id="@+id/playBtn"
+        android:src="@drawable/ic_play"
+        android:background="@drawable/circle_ic"
+        style="@style/ButtonStyle"/>
+</LinearLayout>

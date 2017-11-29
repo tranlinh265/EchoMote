@@ -2,11 +2,12 @@ package com.example.khnhhng.echomote;
 
 import android.app.Activity;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.controlpoint.ActionCallback;
@@ -20,14 +21,17 @@ import org.fourthline.cling.model.types.UDAServiceId;
 
 
 public class RemotePlayerActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener{
-    public ImageView powerBtn;
-    private ImageView playBtn;
-    private ImageView pauseBtn;
-    private ImageView stopBtn;
+    public ImageButton powerBtn;
+    private ImageButton playBtn;
+    private ImageButton pauseBtn;
+    private ImageButton stopBtn;
     public SeekBar volumeBar;
     static private Device device;
     static private AndroidUpnpService upnpService;
 
+    private boolean isPlaying=false;
+    private boolean isPause=false;
+    private boolean isStop=false;
     public boolean isOn;
     public static int currentVolume;
 
@@ -42,18 +46,18 @@ public class RemotePlayerActivity extends Activity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activityremoteplayer);
+        setContentView(R.layout.ac_remoteplayer);
 
-        powerBtn = (ImageView) findViewById(R.id.powerBtn);
+        powerBtn = (ImageButton) findViewById(R.id.powerBtn);
         powerBtn.setOnClickListener(this);
 
-        playBtn = (ImageView) findViewById(R.id.playBtn);
+        playBtn = (ImageButton) findViewById(R.id.playBtn);
         playBtn.setOnClickListener(this);
 
-        pauseBtn = (ImageView) findViewById(R.id.pauseBtn);
+        pauseBtn = (ImageButton) findViewById(R.id.pauseBtn);
         pauseBtn.setOnClickListener(this);
 
-        stopBtn = (ImageView) findViewById(R.id.stopBtn);
+        stopBtn = (ImageButton) findViewById(R.id.stopBtn);
         stopBtn.setOnClickListener(this);
 
         volumeBar = (SeekBar) findViewById(R.id.volumeBar);
@@ -69,8 +73,15 @@ public class RemotePlayerActivity extends Activity implements View.OnClickListen
         volumeBar.setProgress(currentVolume);
 
         instance = this;
+        initView();
     }
-
+    private void initView(){
+        if(isOn){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                powerBtn.setBackground(getResources().getDrawable(R.drawable.circle_on_ic));
+            }
+        }
+    }
 //    public static void updatePower(int i)
 //    {
 //        powerBtn.setText(i == 1 ? "ON" : "OFF");
@@ -103,6 +114,15 @@ public class RemotePlayerActivity extends Activity implements View.OnClickListen
         settargetaction.setInput("newTargetValue", newvalue);
         new ActionCallback.Default(settargetaction, upnpService.getControlPoint()).run();
         Log.d("failed", settargetaction.getFailure() != null ? "Disconnected" : "On service");
+        if(isOn){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                powerBtn.setBackground(getResources().getDrawable(R.drawable.circle_ic));
+            }
+        }else{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                powerBtn.setBackground(getResources().getDrawable(R.drawable.circle_on_ic));
+            }
+        }
         isOn = !isOn;
     }
 
@@ -153,16 +173,52 @@ public class RemotePlayerActivity extends Activity implements View.OnClickListen
         switch (view.getId())
         {
             case R.id.powerBtn:
+                this.updateStatus(false, false,false);
                 switchPower(); break;
             case R.id.playBtn:
+                if(this.isOn && !this.isPlaying){
+                    this.updateStatus(true, false,false);
+                }
                 playAudio(); break;
             case R.id.pauseBtn:
+                if(this.isOn && !this.isPause){
+                    this.updateStatus(false, true, false);
+                }
                 pauseAudio(); break;
             case R.id.stopBtn:
+                if(this.isOn && !this.isStop){
+                    this.updateStatus(false,false,true);
+                }
                 stopAudio();break;
         }
     }
 
+    private void updateStatus(boolean isPlaying, boolean isPause, boolean isStop){
+        this.isPlaying = isPlaying;
+        this.isPause = isPause;
+        this.isStop = isStop;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
+            if(this.isPlaying){
+                playBtn.setBackground(getResources().getDrawable(R.drawable.circle_on_ic));
+            }
+            else{
+                playBtn.setBackground(getResources().getDrawable(R.drawable.circle_ic));
+            }
+            if(this.isPause){
+                pauseBtn.setBackground(getResources().getDrawable(R.drawable.circle_on_ic));
+            }
+            else{
+                pauseBtn.setBackground(getResources().getDrawable(R.drawable.circle_ic));
+            }
+            if(this.isStop){
+                stopBtn.setBackground(getResources().getDrawable(R.drawable.circle_on_ic));
+            }
+            else{
+                stopBtn.setBackground(getResources().getDrawable(R.drawable.circle_ic));
+            }
+        }
+
+    }
     public static void updateVolume(int value)
     {
 //        Service service = device.findService(new UDAServiceId("Audio"));
@@ -203,7 +259,7 @@ public class RemotePlayerActivity extends Activity implements View.OnClickListen
         ActionCallback actionCallback = new ActionCallback(settargetaction) {
             @Override
             public void success(ActionInvocation actionInvocation) {
-
+                Log.e("123","123");
             }
 
             @Override
